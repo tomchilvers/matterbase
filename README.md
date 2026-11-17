@@ -17,7 +17,7 @@ none automatically commissions devices or creates Home Assistant entities.
 ## Home Assistant Container / Docker
 
 Use [compose.homeassistant.yaml](compose.homeassistant.yaml) in Dockhand. Set
-`HOME_ASSISTANT_ORIGIN` to your Home Assistant browser URL, pull, and deploy.
+`MATTERBASE_FRAME_ANCESTORS` to your Home Assistant browser URL, pull, and deploy.
 Then install the [Marketplace/HACS connector](https://github.com/tomchilvers/matterbase-homeassistant)
 using **Add from link**, and configure your Matterbase URL under **Devices & services**.
 It adds a sidebar panel. Marketplace installs the connector; the Docker service
@@ -26,6 +26,22 @@ still runs separately. A Webpage dashboard is also available without the connect
 See the [Container guide](docs/home-assistant-container.md) for the complete setup,
 HTTPS/camera requirements, existing-volume migration, and backups. Keep using
 `:latest` for this deployment; the app/add-on image requires Supervisor ingress.
+
+### “The server blocks embedding”
+
+All Compose files pass `MATTERBASE_FRAME_ANCESTORS` through to the container. In
+Dockhand's **stack environment**, set it to your Home Assistant browser origin:
+
+```text
+MATTERBASE_FRAME_ANCESTORS=https://ha.example.com
+```
+
+Replace that example with your actual URL (scheme, host, and port; no path).
+Several allowed origins can be separated by spaces. For command-line Compose,
+copy [.env.example](.env.example) to `.env` and set the value there. Pull the latest
+image and **redeploy/recreate** the container; a restart alone does not apply
+changed environment variables. Then retry the Matterbase integration setup.
+`HOME_ASSISTANT_ORIGIN` is retained as a fallback for existing stack configurations.
 
 ## Home Assistant app / add-on
 

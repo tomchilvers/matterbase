@@ -38,7 +38,9 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Validate Dockhand Compose file
         run: |
+          docker compose -f compose.yaml config --quiet
           docker compose -f compose.dockhand.yaml config --quiet
+          MATTERBASE_FRAME_ANCESTORS=http://homeassistant.local:8123 docker compose -f compose.homeassistant.yaml config --quiet
           HOME_ASSISTANT_ORIGIN=http://homeassistant.local:8123 docker compose -f compose.homeassistant.yaml config --quiet
       - name: Package local Home Assistant add-on
         run: python scripts/package_addon.py /tmp/matterbase-homeassistant.tar.gz

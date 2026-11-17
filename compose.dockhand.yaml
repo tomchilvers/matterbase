@@ -10,6 +10,10 @@ services:
       - matterbase-data:/data
     environment:
       DATA_DIR: /data
+      # Allow only your Home Assistant browser origin; blank keeps embedding disabled.
+      # Set this in Dockhand's stack environment or a .env file beside this Compose file.
+      MATTERBASE_FRAME_ANCESTORS: "${MATTERBASE_FRAME_ANCESTORS:-${HOME_ASSISTANT_ORIGIN:-}}"
+      MATTERBASE_HOME_ASSISTANT_HELP: "${MATTERBASE_HOME_ASSISTANT_HELP:-0}"
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

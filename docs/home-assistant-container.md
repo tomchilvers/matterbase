@@ -10,10 +10,10 @@ access token. Home Assistant OS users can still install the app/add-on normally.
 
 In Dockhand, use [compose.homeassistant.yaml](../compose.homeassistant.yaml) in a
 stack named **matterbase**. Set the stack environment variable
-`HOME_ASSISTANT_ORIGIN` to the exact Home Assistant URL you use in your browser:
+`MATTERBASE_FRAME_ANCESTORS` to the exact Home Assistant URL you use in your browser:
 
 ```text
-HOME_ASSISTANT_ORIGIN=http://192.0.2.10:8123
+MATTERBASE_FRAME_ANCESTORS=http://192.0.2.10:8123
 ```
 
 The address above is an example: replace it with your actual server address.
@@ -30,6 +30,20 @@ environment:
   MATTERBASE_HOME_ASSISTANT_HELP: "1"
   MATTERBASE_FRAME_ANCESTORS: "http://192.0.2.10:8123"
 ```
+
+All three Compose files now pass this setting through. The Home Assistant-specific
+file requires a value; ordinary standalone files leave embedding off when it is
+blank. Existing `HOME_ASSISTANT_ORIGIN` settings remain supported as a fallback,
+and an explicit `MATTERBASE_FRAME_ANCESTORS` value takes precedence.
+
+For command-line Compose, copy `.env.example` to `.env` beside the Compose file and
+set the value there. In Dockhand, use its **stack environment** editor (or put the
+actual URL directly in the service's `environment` section).
+
+If setup says **“The server blocks embedding”**, pull the latest image and
+**redeploy/recreate the existing container** after setting this variable. A simple
+restart keeps the old environment. Retry integration setup after the container is
+healthy. Keep the existing stack name and data volume.
 
 Pull the latest image and redeploy. Keep using the standalone `:latest` image,
 not the `-ha.*` add-on images: those accept only Supervisor ingress requests.

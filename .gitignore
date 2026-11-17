@@ -4,3 +4,7 @@ __pycache__/
 data/
 .DS_Store
 *.sqlite3*
+
+.env
+.env.*
+!.env.example
