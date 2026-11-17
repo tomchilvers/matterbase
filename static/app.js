@@ -1,3 +1,4 @@
+import {request,pairingQrUrl,exportBackup} from './platform.mjs';
 import {codeKey,deviceLabel,collectScan,chooseOverwrite,excludeScanCode,reconcileSaveConflicts} from './duplicates.mjs';
 import {escapeHtml as escape,formatPairingCode as display,resolveInventorySelection,toggleInventorySelection,inventoryRow,inventoryDetails} from './inventory.mjs';
 
@@ -35,7 +36,7 @@ async function api(url, options = {}) {
   if(options.method && !['GET','HEAD'].includes(options.method.toUpperCase())) {
     const headers=new Headers(options.headers);headers.set('X-Matterbase-Request','1');options={...options,headers};
   }
-  const response = await fetch(url.replace(/^\//,''), options);
+  const response = await request(url, options);
   if (response.status === 204) return null;
   let body;
   try { body = await response.json(); } catch { throw new Error('The server returned an unexpected response. Please try again.'); }
@@ -78,7 +79,7 @@ function renderLibrary() {
   $('#device-details-content').hidden=!!state.edit;
   $('#edit-form').hidden=!state.edit;
   $('#device-details-content').innerHTML=device && state.detailOpen ? inventoryDetails(device,{
-    marker:marker(device),colour:colourName(device.color),icon:iconNames[device.icon],qrVisible:state.qrVisible,homeAssistantHelp:document.body.dataset.homeAssistantHelp==='true'
+    marker:marker(device),colour:colourName(device.color),icon:iconNames[device.icon],qrVisible:state.qrVisible,qrUrl:state.qrVisible?pairingQrUrl(device):undefined,homeAssistantHelp:document.body.dataset.homeAssistantHelp==='true'
   }):'';
   if(device && state.detailOpen) {
     panel.setAttribute('aria-labelledby',`device-trigger-${device.id}`);
@@ -387,7 +388,7 @@ $('#exclude-all-duplicates').onclick = () => {for(const d of [...state.duplicate
 $('#manual-code').addEventListener('keydown',e => {if (e.key === 'Enter') manualCode();});
 $('#save').onclick = save; $('#start-camera').onclick = startCamera; $('#stop-camera').onclick = stopCamera;
 $('#capture').onclick = async () => {if (state.scanning) return; const blob = await frame(); if (blob) {stopCamera(); await scan(blob,true);}};
-$('#export').onclick = () => window.location.assign('api/export');
+$('#export').onclick = async () => {try{await exportBackup();}catch(error){toast(error.message);}};
 $('#open-backups').onclick=()=>{
   if(state.edit && !canLeaveEdit())return;
   renderLibrary();const panel=$('#backup-tools');panel.hidden=!panel.hidden;

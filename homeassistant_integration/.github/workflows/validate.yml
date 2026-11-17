@@ -23,5 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Test native marker recognition
+        run: node --test tests/*.test.mjs
       - name: Test against Home Assistant
         run: docker run --rm -v "$GITHUB_WORKSPACE:/work:ro" --entrypoint python ghcr.io/home-assistant/home-assistant:2026.11.2 /work/tests/validate_integration.py

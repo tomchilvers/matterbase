@@ -38,11 +38,11 @@ export function inventoryRow(device,{selected,expanded,desktop,marker}) {
   </article>`;
 }
 
-export function inventoryDetails(device,{marker,colour,icon,qrVisible,homeAssistantHelp=false}) {
+export function inventoryDetails(device,{marker,colour,icon,qrVisible,qrUrl,homeAssistantHelp=false}) {
   const title=deviceLabel(device), escape=escapeHtml;
   const property=(label,value,raw=false)=>`<div><dt>${label}</dt><dd>${raw?value:escape(value || 'Not set')}</dd></div>`;
   const qr=qrVisible && device.qr_payload ? `<div class="qr-reveal" id="device-qr-content">
-    <img class="saved-qr" data-pairing-qr="${device.id}" src="api/devices/${device.id}/qr" alt="Matter pairing QR code for ${escape(title)}" width="240" height="240">
+    <img class="saved-qr" data-pairing-qr="${device.id}" src="${escape(qrUrl || `api/devices/${device.id}/qr`)}" alt="Matter pairing QR code for ${escape(title)}" width="240" height="240">
     <p class="hint qr-status" role="status"></p>
     <details class="qr-payload"><summary>Original QR payload</summary><pre>${escape(device.qr_payload)}</pre></details>
   </div>` : '';

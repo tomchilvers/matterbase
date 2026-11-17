@@ -35,7 +35,7 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
       - name: Test recognition edit protection
-        run: node --test tests/*.test.mjs
+        run: node --test tests/*.test.mjs homeassistant_integration/tests/*.test.mjs
       - name: Validate Dockhand Compose file
         run: |
           docker compose -f compose.yaml config --quiet

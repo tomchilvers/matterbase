@@ -1,12 +1,12 @@
 # Matterbase
 
-A small, mobile-first home for Matter pairing codes. One Docker container, one SQLite database, no cloud services or API keys.
+A small, mobile-first home for Matter pairing codes. Run natively inside Home Assistant through Marketplace, or independently in Docker. No cloud services or API keys.
 
 ## Choose your installation
 
 | Your setup | Install Matterbase |
 | --- | --- |
-| Home Assistant Container / Docker | Run the standalone image beside HA; install the Marketplace connector for a sidebar panel. [Container guide](docs/home-assistant-container.md) |
+| Home Assistant Container / Docker | Install the [native Marketplace integration](https://github.com/tomchilvers/matterbase-homeassistant). No separate container needed. |
 | Home Assistant OS | Install the app/add-on from this repository. Instructions below. |
 | No Home Assistant | Use the standalone Docker / Dockhand setup below. |
 
@@ -16,16 +16,18 @@ none automatically commissions devices or creates Home Assistant entities.
 
 ## Home Assistant Container / Docker
 
-Use [compose.homeassistant.yaml](compose.homeassistant.yaml) in Dockhand. Set
-`MATTERBASE_FRAME_ANCESTORS` to your Home Assistant browser URL, pull, and deploy.
-Then install the [Marketplace/HACS connector](https://github.com/tomchilvers/matterbase-homeassistant)
-using **Add from link**, and configure your Matterbase URL under **Devices & services**.
-It adds a sidebar panel. Marketplace installs the connector; the Docker service
-still runs separately. A Webpage dashboard is also available without the connector.
+The [native Marketplace integration](https://github.com/tomchilvers/matterbase-homeassistant)
+runs entirely inside Home Assistant, with local browser QR/OCR and a separate private
+inventory store. Install it through **Marketplace → Add from link**, restart Home
+Assistant, and add Matterbase under **Devices & services**. No Matterbase URL is needed.
 
-See the [Container guide](docs/home-assistant-container.md) for the complete setup,
-HTTPS/camera requirements, existing-volume migration, and backups. Keep using
-`:latest` for this deployment; the app/add-on image requires Supervisor ingress.
+Existing external connectors remain supported. To migrate, export JSON from Docker,
+remove the old integration entry, add the native integration, and import the backup.
+Verify the inventory before stopping your old container.
+
+For an independent Docker service, [compose.homeassistant.yaml](compose.homeassistant.yaml)
+and the [Container guide](docs/home-assistant-container.md) remain available. Embedding
+settings below apply only to that external deployment, not the native integration.
 
 ### “The server blocks embedding”
 
