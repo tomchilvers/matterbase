@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7f4">
+  <meta name="description" content="Your Matter pairing codes, kept together on your server.">
+  <title>Matterbase · Your devices</title>
+  <link rel="icon" href="static/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="static/style.css">
+  <script src="static/app.js" type="module"></script>
+  <script src="static/transfers.js" type="module"></script>
+</head>
+<body data-home-assistant-help="false">
+  <header class="header"><a class="wordmark" href="./" aria-label="Matterbase home"><svg class="icon" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>Matterbase</a><span class="header-note">A little order for your smart home.</span></header>
+  <main>
+    <section id="library" aria-labelledby="library-title">
+      <div class="heading-row"><div><h1 id="library-title">Your devices</h1><p class="intro">Pairing codes, kept together.</p></div><button id="open-backups" class="quiet" aria-expanded="false" aria-controls="backup-tools">Import / Backup</button></div>
+      <section id="backup-tools" class="backup-tools" hidden aria-labelledby="backup-title">
+        <h2 id="backup-title">Import, export &amp; backup</h2>
+        <p>Download your complete inventory as a portable JSON backup, or restore one here. Pairing codes and original QR payloads are included.</p>
+        <button id="export" class="secondary">Download JSON backup</button>
+        <h3>Import / restore</h3>
+        <p class="hint">Preview before saving. Duplicates default to Skip; choose Overwrite to restore their saved details. Overwrite replaces the saved notes, dates, and QR payload too. Download a backup first to keep the current versions. Devices absent from the backup stay in your inventory.</p>
+        <label class="secondary file-button">Choose JSON backup<input id="backup-file" type="file" accept="application/json,.json"></label>
+        <details class="paste-backup"><summary>Or paste backup JSON</summary><label for="backup-json">Backup contents</label><textarea id="backup-json" rows="5" spellcheck="false" placeholder='{"version":1,"devices":[…]}'></textarea></details>
+        <button id="preview-import" class="secondary">Preview import</button>
+        <p id="import-status" role="status" aria-live="polite"></p>
+        <div id="import-preview" hidden><div id="import-list"></div><div class="import-actions"><button id="apply-import" class="primary">Import selected devices</button><button id="cancel-import" class="quiet">Cancel import</button></div></div>
+      </section>
+      <div class="library-controls">
+      <label class="search"><svg class="icon" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6.5"/><path d="m15 15 5 5"/></svg><input id="search" type="search" placeholder="Search devices or codes" aria-label="Search devices or codes"></label>
+      <div class="actions"><button class="primary" data-add="camera"><svg class="icon" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>Scan a label</button><button class="secondary" data-add="manual">Enter manually</button></div>
+      </div>
+      <div id="library-status" role="status"></div>
+      <div id="inventory-layout" class="inventory-layout" hidden>
+        <div id="device-list" role="list" aria-label="Saved devices"></div>
+        <div id="device-detail-host"><section id="device-detail-panel" class="device-detail-panel" hidden aria-label="Device details"><div id="device-details-content"></div><form id="edit-form" class="device-edit-form" hidden><div class="heading-row"><h2>Edit device</h2><button type="button" id="close-edit" class="quiet">Cancel</button></div><label>Brand<input list="known-brands" name="brand" maxlength="120"></label><label>Product<input list="known-products" name="product" maxlength="160"></label><label>Device name / location<input name="name" maxlength="160" placeholder="e.g. Hallway lamp"></label><div id="edit-appearance"></div><label>Notes<textarea name="notes" maxlength="2000" rows="3"></textarea></label><p id="edit-code" class="pairing-code"></p><p id="edit-error" class="error" role="alert"></p><button class="primary" type="submit">Save changes</button><button type="button" id="delete-device" class="danger">Delete device</button></form></section></div>
+      </div>
+      <div id="empty" class="empty" hidden><svg class="empty-icon" viewBox="0 0 64 64"><path d="M6 6h20v20H6zm32 0h20v20H38zM6 38h20v20H6z"/><path d="M14 14h4v4h-4zm32 0h4v4h-4zM14 46h4v4h-4zM38 38h8v8h-8zm12 12h8v8h-8zM50 38h8m-20 16v4m8-8v8m10-12h2"/></svg><h2>A home for your pairing codes</h2><p>Scan a label or add a code to get started.</p></div>
+      <div id="no-results" class="empty" hidden><h2>No matching devices</h2><p>Try another name, brand, or pairing code.</p></div>
+      <footer>Stored on your server</footer>
+    </section>
+    <section id="add-view" hidden aria-labelledby="add-title">
+      <div class="heading-row"><h1 id="add-title">Add devices</h1><button id="cancel" class="quiet">Cancel</button></div>
+      <div class="tabs" aria-label="Input method"><button data-mode="camera">Camera</button><button data-mode="photo">Photo</button><button data-mode="manual">Manual</button></div>
+      <div id="camera-panel" class="input-panel" hidden>
+        <div class="camera-wrap"><video id="video" autoplay muted playsinline></video><div class="viewfinder"></div><span id="capture-count" class="capture-count" hidden></span><span id="capture-feedback" class="capture-feedback" role="status" aria-live="polite" hidden></span></div>
+        <button id="start-camera" class="primary">Start camera</button>
+        <div id="camera-controls" hidden><button id="capture" class="secondary">Capture text &amp; codes</button><button id="stop-camera" class="quiet">Stop camera</button></div>
+        <p id="camera-hint" class="hint">Keep the whole leaflet in view, including the product heading and brand. Hold steady while codes and names are read.</p>
+      </div>
+      <div id="photo-panel" class="input-panel" hidden><div class="upload"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="16" cy="8" r="2"/><path d="m3 17 6-6 5 5 3-3 4 4"/></svg><label class="secondary file-button">Choose a photo<input id="photo" type="file" accept="image/*"></label><p>Multiple QR codes? We’ll find them all.</p></div><img id="preview" alt="Selected label for scanning" hidden></div>
+      <div id="manual-panel" class="input-panel" hidden><label for="manual-code">Pairing code</label><div class="inline"><input id="manual-code" placeholder="XXXX-XXX-XXXX" autocomplete="off" spellcheck="false"><button id="add-code" class="secondary">Add code</button></div><p class="hint">Enter an 11-digit printed code or paste an MT: QR payload.</p></div>
+      <div id="scan-status" class="status" role="status" aria-live="polite"></div>
+      <div id="identity-suggestions" hidden><p id="identity-hint" class="hint"></p><div id="brand-suggestions"></div><div id="product-suggestions"></div></div><div id="text-review" hidden><details><summary>Original label text</summary><pre id="ocr-text"></pre></details></div>
+      <div class="fields"><label>Brand<input list="known-brands" id="brand" placeholder="e.g. IKEA, Philips, Eve" maxlength="120" autocomplete="organization"></label><label>Product<input list="known-products" id="product" placeholder="e.g. KAJPLATS" maxlength="160" autocomplete="off"></label></div>
+      <section id="duplicates-review" hidden aria-labelledby="duplicates-title"><h2 id="duplicates-title">Already saved</h2><p class="hint">Choose what to do with each duplicate. Originals stay unchanged until you save.</p><div id="duplicate-list"></div><button id="exclude-all-duplicates" class="secondary" hidden>Exclude all duplicates from this scan</button></section>
+      <div class="heading-row review-heading"><h2>Detected codes <span id="code-count"></span></h2><button id="manual-extra" class="quiet">+ Add manually</button></div>
+      <p id="review-hint" class="hint">Scan or enter a code to begin. Product details above apply to the batch; you can change each device below.</p>
+      <div id="review-list"></div>
+      <button id="save" class="primary save" disabled>Save devices</button>
+    </section>
+  </main>
+  <nav class="bottom-nav" aria-label="Main navigation"><button id="nav-devices" class="active"><svg class="icon" viewBox="0 0 24 24"><path d="m3 10 9-8 9 8v11h-7v-8h-4v8H3z"/></svg>Devices</button><button id="nav-add"><svg class="icon" viewBox="0 0 24 24"><path d="M12 3v18M3 12h18"/></svg>Add devices</button></nav>
+
+  <datalist id="known-brands"></datalist><datalist id="known-products"></datalist>
+  <div id="toast" role="status" hidden></div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Paste into a Dockhand stack named "matterbase".
+# The image is public; no registry credentials are needed.
+services:
+  matterbase:
+    image: ghcr.io/tomchilvers/matterbase:latest
+    pull_policy: always
+    ports:
+      - "8000:8000"
+    volumes:
+      - matterbase-data:/data
+    environment:
+      DATA_DIR: /data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  matterbase-data:

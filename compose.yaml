@@ -1,0 +1,14 @@
+services:
+  matterbase:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - matterbase-data:/data
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  matterbase-data:
