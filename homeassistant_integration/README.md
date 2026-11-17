@@ -45,3 +45,8 @@ entities, telemetry, or logs. Use synthetic data in bug reports.
 
 The backend remains usable without Home Assistant. Scanning runs locally with
 Tesseract, ZXing, and OpenCV; there is no cloud AI scanning service.
+
+## Licence
+
+This connector is licensed under MIT; see [LICENSE](LICENSE). This does not change
+the licensing of the separate Matterbase server.
