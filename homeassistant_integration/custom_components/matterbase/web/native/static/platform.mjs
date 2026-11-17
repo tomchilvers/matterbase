@@ -4,8 +4,10 @@ const pending=new Map();
 const ready=new Promise(resolve=>{readyResolve=resolve;});
 window.addEventListener('message',event=>{
   if(event.source!==parent || event.origin!==location.origin || event.data?.type!=='matterbase-native-connect' || !event.ports[0] || port)return;
+  document.documentElement.dataset.theme=event.data.dark?'dark':'light';
   port=event.ports[0];document.body.dataset.homeAssistantHelp=String(!!event.data.pairing_help);
   port.onmessage=({data})=>{
+    if(data?.type==='theme'){document.documentElement.dataset.theme=data.dark?'dark':'light';return;}
     const request=pending.get(data?.id);if(!request)return;
     clearTimeout(request.timer);pending.delete(data.id);request.resolve(data.result);
   };

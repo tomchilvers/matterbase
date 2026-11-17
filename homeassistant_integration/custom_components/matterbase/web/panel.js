@@ -1,5 +1,5 @@
 class MatterbasePanel extends HTMLElement {
-  set hass(value){this._hass=value;}
+  set hass(value){this._hass=value;this._port?.postMessage({type:"theme",dark:!!value.themes?.darkMode});}
   set panel(value){this._panel=value;this.render();}
   connectedCallback(){this.render();}
   disconnectedCallback(){this._port?.close();window.removeEventListener('message',this._onMessage);this._key=null;}
@@ -29,7 +29,7 @@ class MatterbasePanel extends HTMLElement {
             channel.port1.postMessage({id:data.id,result});
           }catch(error){channel.port1.postMessage({id:data.id,result:{status:error?.status_code || 503,body:{error:'Could not access the native inventory. Check your Home Assistant session and try again.'}}});}
         };
-        frame.contentWindow.postMessage({type:'matterbase-native-connect',pairing_help:!!config.pairing_help},location.origin,[channel.port2]);
+        frame.contentWindow.postMessage({type:'matterbase-native-connect',pairing_help:!!config.pairing_help,dark:!!this._hass?.themes?.darkMode},location.origin,[channel.port2]);
       };
       window.addEventListener('message',this._onMessage);
       frame.src='/matterbase-native/index.html';

@@ -30,7 +30,7 @@ async def async_setup_entry(hass,entry):
     await async_register_panel(
         hass,frontend_url_path=DOMAIN,webcomponent_name='matterbase-panel',
         sidebar_title='Matterbase',sidebar_icon='mdi:qrcode-scan',
-        module_url='/matterbase-integration/panel.js?v=2.0.0',
+        module_url='/matterbase-integration/panel.js?v=2.0.1',
         config=config,require_admin=True,
     )
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))

@@ -13,6 +13,8 @@ Scan multiple QR codes from photos or the camera, read brand/product text, choos
 
 All QR/OCR engines and English language data are bundled locally. Photos are processed in your browser; images are not uploaded to Home Assistant or a cloud service. Loading OCR can take a moment on the first scan. Live camera access requires HTTPS (or localhost), browser permission, and a supported browser. Photo and manual input remain available. Colour/icon suggestions are approximate and editable.
 
+The panel follows Home Assistant’s light/dark theme and updates when you change it. Standalone Docker follows your device’s colour preference.
+
 ## Inventory and backups
 
 Inventory is stored separately from Home Assistant entities and devices in the private `.storage/matterbase.inventory` file. The API and sidebar require an administrator login. No devices are automatically commissioned, no entities are created, and no pairing credentials are placed in entity states or logs.
