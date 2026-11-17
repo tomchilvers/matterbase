@@ -1,10 +1,8 @@
-# Home Assistant Container / Docker
-
-Home Assistant Container has no Supervisor or app/add-on store. Run Matterbase as
-a separate Docker service, then optionally display it in a Home Assistant Webpage
-dashboard. A Marketplace/HACS connector can add the sidebar automatically; a Webpage dashboard
-also works without installing an integration. Neither route requires a Home Assistant
-access token. Home Assistant OS users can still install the app/add-on normally.
+# For a fully native installation with no separate service, install the
+[Marketplace integration](https://github.com/tomchilvers/matterbase-homeassistant).
+This guide covers the optional **independent Docker deployment** and embedding it
+in Home Assistant. Home Assistant Container has no Supervisor/add-on store; the
+native Marketplace integration works without Supervisor.
 
 ## 1. Deploy Matterbase beside Home Assistant
 
@@ -52,21 +50,13 @@ Do not run a second container against the same SQLite data volume.
 Open Matterbase directly at `http://YOUR_SERVER:8000/` and check it works first.
 No shared Docker network, Home Assistant volume mount, or host networking is needed.
 
-## 2. Install the Marketplace / HACS connector (recommended)
+## 2. Display the independent Docker app
 
-In **Marketplace → Add from link**, enter:
-`https://github.com/tomchilvers/matterbase-homeassistant`.
-Install the integration, restart Home Assistant if prompted, then go to
-**Settings → Devices & services → Add integration → Matterbase**. Enter your
-Matterbase server URL. Setup checks its health and adds an administrator-only
-**Matterbase** sidebar panel automatically.
-
-The connector does not install or manage Docker, copy inventory into Home
-Assistant, or commission devices. It needs the separate service from step 1.
-Marketplace manages connector updates; Dockhand/Compose manages backend updates.
-See the [connector README](https://github.com/tomchilvers/matterbase-homeassistant).
-
-## Alternative: use a Webpage dashboard without the connector
+Existing version-1 Marketplace connector entries continue to work after upgrading.
+New version-2 integration entries create a native inventory, rather than asking for
+an external server URL. To move from Docker to native, follow the JSON migration
+instructions in the [integration README](https://github.com/tomchilvers/matterbase-homeassistant).
+For a new sidebar showing your independent Docker server, use a Webpage dashboard:
 
 In Home Assistant, go to **Settings → Dashboards → Add dashboard**, choose
 **Webpage**, and set:
