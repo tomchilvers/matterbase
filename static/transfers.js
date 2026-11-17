@@ -3,7 +3,7 @@ import {deviceLabel} from './duplicates.mjs';
 const $=s=>document.querySelector(s);
 let entries=[],busy=false;
 async function post(url,body) {
- const response=await fetch(url.replace(/^\//,''),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ const response=await fetch(url.replace(/^\//,''),{method:'POST',headers:{'Content-Type':'application/json','X-Matterbase-Request':'1'},body:JSON.stringify(body)});
  const result=await response.json();
  if(!response.ok)throw new Error(result.error || 'Could not import this backup.');
  return result;

@@ -3,7 +3,7 @@
 ## Install from the repository
 
 Requires Home Assistant OS with the app/add-on store. Home Assistant Container
-users should continue using the standalone Docker image.
+users should use the [Container deployment guide](https://github.com/tomchilvers/matterbase/blob/main/docs/home-assistant-container.md), including the optional Webpage dashboard.
 
 1. Open **Settings → Apps → Install app** (or the Add-on Store on older versions).
 2. Open the top-right menu, select **Repositories**, and add:
@@ -14,7 +14,7 @@ users should continue using the standalone Docker image.
 [Add the repository](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Ftomchilvers%2Fmatterbase)
 
 The repository and images are public. No GitHub token, registry login, or file
-copying is needed. Supervisor pulls `ghcr.io/tomchilvers/matterbase:1.0.0-ha.2`
+copying is needed. Supervisor pulls `ghcr.io/tomchilvers/matterbase:1.0.0-ha.3`
 for AMD64 or AArch64. Update through the app/add-on store when a new version appears.
 
 ## Local installation (fallback)

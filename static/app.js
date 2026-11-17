@@ -32,6 +32,9 @@ function appearanceControls(device,index) {
 let toastTimer;
 function toast(message) { $('#toast').textContent = message; $('#toast').hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => $('#toast').hidden = true, 3200); }
 async function api(url, options = {}) {
+  if(options.method && !['GET','HEAD'].includes(options.method.toUpperCase())) {
+    const headers=new Headers(options.headers);headers.set('X-Matterbase-Request','1');options={...options,headers};
+  }
   const response = await fetch(url.replace(/^\//,''), options);
   if (response.status === 204) return null;
   let body;

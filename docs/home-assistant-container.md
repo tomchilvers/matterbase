@@ -1,0 +1,110 @@
+# Home Assistant Container / Docker
+
+Home Assistant Container has no Supervisor or app/add-on store. Run Matterbase as
+a separate Docker service, then optionally display it in a Home Assistant Webpage
+dashboard. A Marketplace/HACS connector can add the sidebar automatically; a Webpage dashboard
+also works without installing an integration. Neither route requires a Home Assistant
+access token. Home Assistant OS users can still install the app/add-on normally.
+
+## 1. Deploy Matterbase beside Home Assistant
+
+In Dockhand, use [compose.homeassistant.yaml](../compose.homeassistant.yaml) in a
+stack named **matterbase**. Set the stack environment variable
+`HOME_ASSISTANT_ORIGIN` to the exact Home Assistant URL you use in your browser:
+
+```text
+HOME_ASSISTANT_ORIGIN=http://192.0.2.10:8123
+```
+
+The address above is an example: replace it with your actual server address.
+For HTTPS, use the HTTPS origin, such as `https://ha.example.com`.
+No path, query, or wildcard belongs in an origin. Several origins can be separated
+by spaces if you use both a local URL and a remote URL.
+
+If you already have a Matterbase stack, keep its name and existing volume mapping.
+You can simply add these two environment variables to your current service:
+
+```yaml
+environment:
+  DATA_DIR: /data
+  MATTERBASE_HOME_ASSISTANT_HELP: "1"
+  MATTERBASE_FRAME_ANCESTORS: "http://192.0.2.10:8123"
+```
+
+Pull the latest image and redeploy. Keep using the standalone `:latest` image,
+not the `-ha.*` add-on images: those accept only Supervisor ingress requests.
+Do not run a second container against the same SQLite data volume.
+
+Open Matterbase directly at `http://YOUR_SERVER:8000/` and check it works first.
+No shared Docker network, Home Assistant volume mount, or host networking is needed.
+
+## 2. Install the Marketplace / HACS connector (recommended)
+
+In **Marketplace → Add from link**, enter:
+`https://github.com/tomchilvers/matterbase-homeassistant`.
+Install the integration, restart Home Assistant if prompted, then go to
+**Settings → Devices & services → Add integration → Matterbase**. Enter your
+Matterbase server URL. Setup checks its health and adds an administrator-only
+**Matterbase** sidebar panel automatically.
+
+The connector does not install or manage Docker, copy inventory into Home
+Assistant, or commission devices. It needs the separate service from step 1.
+Marketplace manages connector updates; Dockhand/Compose manages backend updates.
+See the [connector README](https://github.com/tomchilvers/matterbase-homeassistant).
+
+## Alternative: use a Webpage dashboard without the connector
+
+In Home Assistant, go to **Settings → Dashboards → Add dashboard**, choose
+**Webpage**, and set:
+
+- Title: **Matterbase**
+- Icon: **mdi:qrcode-scan**
+- URL: the Matterbase address you can open from your browser or phone
+- Enable **Show in sidebar**
+
+Use a browser-reachable address such as your server's LAN address or HTTPS domain,
+not a Docker-only hostname like `http://matterbase:8000`.
+
+Alternatively, add a Webpage card to an existing dashboard:
+
+```yaml
+type: iframe
+url: https://matterbase.example.com/
+aspect_ratio: 100%
+allow: "camera; clipboard-write; fullscreen"
+```
+
+Replace the example URL. For a full-page view, put the card in a Panel view.
+The old `panel_iframe` configuration is not needed.
+
+Reference: [Webpage dashboards](https://www.home-assistant.io/dashboards/dashboards/#webpage-dashboard)
+and [Webpage cards](https://www.home-assistant.io/dashboards/iframe/).
+
+## HTTPS, camera, and access
+
+If Home Assistant uses HTTPS, Matterbase must also use HTTPS to be embedded;
+browsers block an HTTP frame inside an HTTPS page. Use your existing reverse proxy
+and a dedicated Matterbase hostname. Live camera scanning also needs HTTPS, plus
+camera permission on the iframe. A Webpage card's `allow` option above can delegate
+camera and clipboard permission; the browser/Companion app may still limit them.
+Open Matterbase directly if camera or clipboard access is unavailable in the frame.
+Photo upload and manual input remain available.
+
+`MATTERBASE_FRAME_ANCESTORS` controls which sites may embed Matterbase. It does not
+provide authentication or grant Home Assistant's login to the Matterbase service.
+Keep direct access on your trusted network or behind an authenticated HTTPS proxy.
+No CORS access is enabled; inventory writes still require the app's own origin.
+Leaving this variable unset keeps standalone framing disabled. The Home Assistant
+OS add-on retains its separate Supervisor-only access control.
+
+## Inventory, backups, and optional pairing
+
+The database stays in Matterbase's own Docker volume. Import/export and QR reveal
+work in either deployment, and no entities or devices are created automatically.
+`MATTERBASE_HOME_ASSISTANT_HELP=1` shows optional Companion app pairing instructions.
+Pairing still requires your explicit action in Home Assistant's normal Matter flow.
+
+Home Assistant Container backups do not automatically include this separate
+Matterbase volume. Download a JSON inventory backup through **Import / Backup**,
+or stop Matterbase and back up its Docker data volume. Restore/import uses the
+same review and duplicate choices as standalone Docker.

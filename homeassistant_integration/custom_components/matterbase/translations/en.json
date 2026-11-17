@@ -1,0 +1,22 @@
+{
+  "title": "Matterbase",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect your Matterbase inventory",
+        "description": "Run the Matterbase Docker service first, then enter its URL. The address must be reachable from Home Assistant and your browser. Configure MATTERBASE_FRAME_ANCESTORS on the service to allow your Home Assistant URL. This installs a sidebar connector, not the OCR server; it does not create entities or pair devices.",
+        "data": {
+          "url": "Matterbase server URL"
+        }
+      }
+    },
+    "error": {
+      "invalid_url": "Enter an HTTP(S) URL without credentials, query parameters, or fragments.",
+      "cannot_connect": "Cannot reach a healthy Matterbase server. Check the URL, network access, HTTPS certificate, and that its container is running.",
+      "embedding_disabled": "The server blocks embedding. Set MATTERBASE_FRAME_ANCESTORS to your Home Assistant browser URL, then redeploy Matterbase and try again."
+    },
+    "abort": {
+      "single_instance_allowed": "Matterbase is already configured."
+    }
+  }
+}

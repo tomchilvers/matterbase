@@ -1,3 +1,9 @@
+# 1.0.0-ha.3
+
+- Added Home Assistant Container deployment and Webpage dashboard instructions.
+- Optional exact-origin embedding policy for standalone Docker.
+- Preserved write protection for embedded inventory and backup operations.
+
 # 1.0.0-ha.2
 
 - Public repository and anonymous GHCR installation.

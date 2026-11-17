@@ -1,6 +1,6 @@
 {
   "name": "Matterbase",
-  "version": "1.0.0-ha.2",
+  "version": "1.0.0-ha.3",
   "slug": "matterbase",
   "description": "A private inventory of Matter pairing codes, with local scanning and portable backups.",
   "url": "https://github.com/tomchilvers/matterbase",

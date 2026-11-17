@@ -55,10 +55,28 @@ def initialise_database(database):
             time.sleep(.05)
 
 
+def embedding_origins(value):
+    """Accept exact HTTP(S) origins, never CSP wildcards or directives."""
+    origins = []
+    for origin in value.split():
+        if len(origin) > 256 or not re.fullmatch(r"https?://(?:[a-zA-Z0-9.-]+|\[[a-fA-F0-9:]+\])(?::[0-9]+)?/?", origin):
+            raise ValueError("MATTERBASE_FRAME_ANCESTORS must contain space-separated HTTP(S) origins, without paths or wildcards.")
+        parsed = urlsplit(origin)
+        if parsed.port is not None and not 1 <= parsed.port <= 65535:
+            raise ValueError("Invalid port in MATTERBASE_FRAME_ANCESTORS.")
+        canonical = origin.rstrip("/").lower()
+        if canonical not in origins:
+            origins.append(canonical)
+    if len(origins) > 10:
+        raise ValueError("Allow at most 10 embedding origins.")
+    return tuple(origins)
+
+
 def create_app(data_dir=None):
     app = Flask(__name__, static_folder="static")
     app.config.update(MAX_CONTENT_LENGTH=16 * 1024 * 1024,
                       ADDON_MODE=os.environ.get("MATTERBASE_ADDON") == "1",
+                      FRAME_ANCESTORS=embedding_origins(os.environ.get("MATTERBASE_FRAME_ANCESTORS", "")),
                       HOME_ASSISTANT_HELP=os.environ.get("MATTERBASE_HOME_ASSISTANT_HELP") == "1")
     directory = Path(data_dir or os.environ.get("DATA_DIR", "data"))
     directory.mkdir(parents=True, exist_ok=True)
@@ -96,13 +114,21 @@ def create_app(data_dir=None):
             if origin and urlsplit(origin).netloc != request.host:
                 return jsonify(error="Cross-origin writes are not allowed."), 403
             if request.headers.get("Sec-Fetch-Site") == "cross-site":
-                return jsonify(error="Cross-site requests are not allowed."), 403
+                # Browsers may classify even self-fetches inside a cross-site
+                # iframe as cross-site. The app's custom header requires a CORS
+                # preflight from any attacker origin; no CORS access is granted.
+                embedded_self_request = (app.config["FRAME_ANCESTORS"] and origin and
+                    urlsplit(origin).netloc == request.host and
+                    request.headers.get("X-Matterbase-Request") == "1")
+                if not embedded_self_request:
+                    return jsonify(error="Cross-site requests are not allowed."), 403
 
     @app.after_request
     def headers(response):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "same-origin"
-        frame_ancestors = "'self'" if app.config["ADDON_MODE"] else "'none'"
+        frame_ancestors = "'self'" if app.config["ADDON_MODE"] else (
+            "'self' " + " ".join(app.config["FRAME_ANCESTORS"]) if app.config["FRAME_ANCESTORS"] else "'none'")
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; script-src 'self'; style-src 'self'; "
             "img-src 'self' blob: data:; media-src 'self' blob:; connect-src 'self'; "

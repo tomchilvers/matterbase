@@ -28,7 +28,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "--threads", "2", "
 FROM runtime AS homeassistant
 USER root
 ARG BUILD_ARCH
-ARG ADDON_VERSION=1.0.0-ha.2
+ARG ADDON_VERSION=1.0.0-ha.3
 LABEL io.hass.name="Matterbase" io.hass.description="Private Matter pairing-code inventory" \
       io.hass.type="addon" io.hass.version="${ADDON_VERSION}" io.hass.arch="${BUILD_ARCH}"
 COPY homeassistant/run.py /app/addon_run.py
